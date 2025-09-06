@@ -1,6 +1,6 @@
 image:
-  repository: app
-  tag: "latest"
+  repository: ghcr.io/sipixer/gitops-lab
+  tag: "{{ .Values.branch }}"
 branch: "main"
 service:
   type: ClusterIP
