@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gitops-lab
-  namespace: {{ .metadata.namespace }}
+  namespace: TEST
 spec:
   replicas: 1
   selector:
@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: gitops-lab
-        image: ghcr.io/sipixer/gitops-lab:{{ .metadata.name }}
+        image: ghcr.io/sipixer/gitops-lab:main
         ports:
         - containerPort: 3000
