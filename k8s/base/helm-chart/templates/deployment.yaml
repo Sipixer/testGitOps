@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app-chart.fullname" . }}
+  labels:
+    app: {{ include "app-chart.name" . }}
+    branch: {{ .Values.branch }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "app-chart.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "app-chart.name" . }}
+        branch: {{ .Values.branch }}
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 80

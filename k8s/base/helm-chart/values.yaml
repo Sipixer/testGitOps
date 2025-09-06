@@ -1,0 +1,7 @@
+image:
+  repository: app
+  tag: "latest"
+branch: "main"
+service:
+  type: ClusterIP
+  port: 80

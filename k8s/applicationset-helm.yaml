@@ -1,27 +1,31 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: gitops-lab-appset
-  namespace: argocd
+  name: app-per-branch
 spec:
   generators:
     - git:
         repoURL: 'https://github.com/Sipixer/testGitOps.git'
-        revision: HEAD
+        revision: main
         directories:
-          - path: k8s/base
+          - path: k8s/base/helm-chart
+        branches:
+          - pattern: '*'
   template:
     metadata:
-      name: '{{path.basename}}'
+      name: '{{branch}}-app'
     spec:
       project: default
       source:
         repoURL: 'https://github.com/Sipixer/testGitOps.git'
-        targetRevision: HEAD
-        path: k8s/base
+        targetRevision: '{{branch}}'
+        path: k8s/base/helm-chart
+        helm:
+          values: |
+            branch: '{{branch}}'
       destination:
-        server: 'https://kubernetes.default.svc'
-        namespace: '{{path.basename}}'
+        server: https://kubernetes.default.svc
+        namespace: '{{branch}}-ns'
       syncPolicy:
         automated:
           prune: true
