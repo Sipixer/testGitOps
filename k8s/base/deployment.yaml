@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitops-lab
+  namespace: {{ .metadata.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitops-lab
+  template:
+    metadata:
+      labels:
+        app: gitops-lab
+    spec:
+      containers:
+      - name: gitops-lab
+        image: ghcr.io/<GITHUB_USER>/gitops-lab:{{ .metadata.name }}
+        ports:
+        - containerPort: 3000

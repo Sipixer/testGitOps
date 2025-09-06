@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: gitops-lab-appset
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: 'https://github.com/<GITHUB_USER>/my-monorepo.git'
+        revision: HEAD
+        directories:
+          - path: k8s/base
+  template:
+    metadata:
+      name: '{{path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: 'https://github.com/<GITHUB_USER>/my-monorepo.git'
+        targetRevision: HEAD
+        path: k8s/base
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '{{path.basename}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
