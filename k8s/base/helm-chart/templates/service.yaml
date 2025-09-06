@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: {{ include "app-chart.fullname" . }}
   namespace: {{ .Release.Namespace }}
+spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
