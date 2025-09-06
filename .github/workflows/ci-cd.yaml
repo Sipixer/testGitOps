@@ -21,8 +21,9 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          BRANCH_NAME=$(echo "${GITHUB_REF_NAME#refs/heads/}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
-          IMAGE=ghcr.io/${{ github.repository_owner }}/gitops-lab:$BRANCH_NAME
+          BRANCH_NAME=$(echo "${GITHUB_REF_NAME}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
+          REPO_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE=ghcr.io/$REPO_OWNER/gitops-lab:$BRANCH_NAME
           echo "Building $IMAGE"
           docker build -t $IMAGE ./app
           docker push $IMAGE
