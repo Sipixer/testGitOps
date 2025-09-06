@@ -6,7 +6,7 @@ spec:
   generators:
     - git:
         repoURL: 'https://github.com/Sipixer/testGitOps.git'
-        revision: main
+        revision: '*'
         directories:
           - path: k8s/base/helm-chart
         branches:
