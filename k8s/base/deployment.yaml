@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: gitops-lab
-        image: ghcr.io/<GITHUB_USER>/gitops-lab:{{ .metadata.name }}
+        image: ghcr.io/sipixer/gitops-lab:{{ .metadata.name }}
         ports:
         - containerPort: 3000

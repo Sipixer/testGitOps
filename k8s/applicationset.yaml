@@ -6,7 +6,7 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL: 'https://github.com/<GITHUB_USER>/my-monorepo.git'
+        repoURL: 'https://github.com/Sipixer/testGitOps.git'
         revision: HEAD
         directories:
           - path: k8s/base
@@ -16,7 +16,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: 'https://github.com/<GITHUB_USER>/my-monorepo.git'
+        repoURL: 'https://github.com/Sipixer/testGitOps.git'
         targetRevision: HEAD
         path: k8s/base
       destination:
