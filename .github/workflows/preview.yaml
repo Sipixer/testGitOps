@@ -37,9 +37,6 @@ jobs:
           BRANCH=${{ github.head_ref }}
           NAMESPACE=preview-pr-$PR_ID
 
-          # Crée le namespace si nécessaire
-          kubectl create namespace $NAMESPACE || echo "Namespace exists"
-
           # Crée ou sync l'application ArgoCD
           argocd app create preview-pr-$PR_ID \
             --repo https://github.com/${{ github.repository }}.git \
@@ -47,7 +44,8 @@ jobs:
             --dest-server https://kubernetes.default.svc \
             --dest-namespace $NAMESPACE \
             --revision $BRANCH \
-            --sync-policy automated || argocd app sync preview-pr-$PR_ID
+            --sync-policy automated \
+            --auto-create-namespace || argocd app sync preview-pr-$PR_ID
 
   cleanup:
     runs-on: ubuntu-latest
