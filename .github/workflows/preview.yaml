@@ -35,6 +35,7 @@ jobs:
           argocd app create preview-pr-$PR_ID \
             --repo https://github.com/${{ github.repository }}.git \
             --path k8s/manifests \
+            --sync-option CreateNamespace=true \
             --dest-server https://kubernetes.default.svc \
             --dest-namespace $NAMESPACE \
             --revision $BRANCH \
