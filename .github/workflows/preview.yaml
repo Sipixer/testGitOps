@@ -39,6 +39,12 @@ jobs:
 
           kubectl create namespace $NAMESPACE || echo "Namespace exists"
 
+          # Attendre que le namespace soit prêt
+          until kubectl get namespace $NAMESPACE; do
+          echo "Waiting for namespace $NAMESPACE to be created..."
+          sleep 1
+          done
+
           # Crée ou sync l'application ArgoCD
           argocd app create preview-pr-$PR_ID \
             --repo https://github.com/${{ github.repository }}.git \
