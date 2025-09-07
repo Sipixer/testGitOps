@@ -1,0 +1,74 @@
+name: Preview Environment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    if: github.event.action != 'closed'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install ArgoCD CLI
+        run: |
+          curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x /usr/local/bin/argocd
+
+      - name: Login to ArgoCD
+        run: |
+          argocd login ${{ secrets.ARGOCD_SERVER }} \
+            --username ${{ secrets.ARGOCD_USERNAME }} \
+            --password ${{ secrets.ARGOCD_PASSWORD }} \
+            --insecure
+
+      - name: Create Preview App
+        run: |
+          PR_ID=${{ github.event.pull_request.number }}
+          BRANCH=${{ github.head_ref }}
+          NAMESPACE=preview-pr-$PR_ID
+
+          # Crée le namespace si nécessaire
+          kubectl create namespace $NAMESPACE || echo "Namespace exists"
+
+          # Remplace le placeholder PR_ID dans le manifest
+          sed "s/{{PR_ID}}/$PR_ID/g" k8s/manifests/nginx.yaml > /tmp/nginx-pr-$PR_ID.yaml
+
+          # Crée l'app ArgoCD ou fait un sync si elle existe
+          argocd app create preview-pr-$PR_ID \
+            --repo https://github.com/${{ github.repository }}.git \
+            --path /tmp \
+            --dest-server https://kubernetes.default.svc \
+            --dest-namespace $NAMESPACE \
+            --revision $BRANCH \
+            --sync-policy automated || echo "App exists, sync instead"
+
+          argocd app sync preview-pr-$PR_ID
+
+  cleanup:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'closed'
+    steps:
+      - name: Install ArgoCD CLI
+        run: |
+          curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x /usr/local/bin/argocd
+
+      - name: Login to ArgoCD
+        run: |
+          argocd login ${{ secrets.ARGOCD_SERVER }} \
+            --username ${{ secrets.ARGOCD_USERNAME }} \
+            --password ${{ secrets.ARGOCD_PASSWORD }} \
+            --insecure
+
+      - name: Delete Preview App
+        run: |
+          PR_ID=${{ github.event.pull_request.number }}
+          argocd app delete preview-pr-$PR_ID --yes
+
+      - name: Delete Namespace
+        run: |
+          NAMESPACE=preview-pr-${{ github.event.pull_request.number }}
+          kubectl delete namespace $NAMESPACE || echo "Namespace already deleted"

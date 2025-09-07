@@ -1,6 +1,0 @@
-image:
-  repository: ghcr.io/sipixer/gitops-lab
-branch: "main"
-service:
-  type: NodePort
-  port: 80
