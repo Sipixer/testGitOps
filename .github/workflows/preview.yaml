@@ -13,12 +13,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Set up kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_CONTENT }}" | base64 --decode > ~/.kube/config
-          chmod 600 ~/.kube/config
-
       - name: Install ArgoCD CLI
         run: |
           curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
@@ -36,14 +30,6 @@ jobs:
           PR_ID=${{ github.event.pull_request.number }}
           BRANCH=${{ github.head_ref }}
           NAMESPACE=preview-pr-$PR_ID
-
-          kubectl create namespace $NAMESPACE || echo "Namespace exists"
-
-          # Attendre que le namespace soit prêt
-          until kubectl get namespace $NAMESPACE; do
-          echo "Waiting for namespace $NAMESPACE to be created..."
-          sleep 1
-          done
 
           # Crée ou sync l'application ArgoCD
           argocd app create preview-pr-$PR_ID \
